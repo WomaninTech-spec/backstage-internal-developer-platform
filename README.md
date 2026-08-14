@@ -16,6 +16,63 @@
 | **Stack** | TypeScript/React/Node monorepo, PostgreSQL, Redis, Kubernetes, Helm, ArgoCD, GitHub Actions |
 | **Mandate** | One front door for every engineering team: service catalog, golden paths, observability, incident context, engineering metrics, governance |
 
+## Architecture at a glance
+
+The portal is a **composition layer**, not a system of record: ownership, tickets, incidents and
+deploy history stay in their source tool, and the portal's job is to surface the right slice of
+each next to the service it belongs to — with the right permissions. Full breakdown, including
+deployment topology and the catalog data model, in [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).
+
+```mermaid
+flowchart TB
+    subgraph Users
+        ENG[Engineers & Squads]
+        LEAD[Tech Leads / EMs]
+        ONCALL[On-call responders]
+    end
+
+    subgraph Portal["Internal Developer Platform — Backstage"]
+        FE[Frontend<br/>45+ custom plugins]
+        BE[Backend plugin host]
+        CAT[(Software Catalog<br/>~40 business domains)]
+    end
+
+    subgraph SoRs["Systems of record"]
+        GH[GitHub<br/>repos · PRs · deployments]
+        JIRA[Jira<br/>sprints · boards]
+        PD[PagerDuty<br/>on-call · incidents]
+        GCP[Google Cloud<br/>monitoring · logging · secrets]
+        PROM[Prometheus / Grafana<br/>metrics · SLOs]
+        SENTRY[Sentry<br/>error tracking]
+        K8S[Kubernetes<br/>live deploy state]
+    end
+
+    DEVLAKE[Apache DevLake<br/>DORA aggregation]
+
+    ENG --> FE
+    LEAD --> FE
+    ONCALL --> FE
+    FE <--> BE
+    BE <--> CAT
+    BE <--> GH
+    BE <--> JIRA
+    BE <--> PD
+    BE <--> GCP
+    BE <--> PROM
+    BE <--> SENTRY
+    BE <--> K8S
+    GH --> DEVLAKE
+    JIRA --> DEVLAKE
+    PD --> DEVLAKE
+    DEVLAKE <--> BE
+```
+
+**Deployed on GKE**, horizontally autoscaled, delivered via **Helm + ArgoCD** with a
+promotion-based release model (build once, promote the same artifact through environments). A
+single `app-config.yaml` is the source of truth, synced into the Helm values that render the
+Kubernetes ConfigMap — checked by a pre-commit hook and re-verified in CI, so the config in the
+PR is provably the config running in the cluster.
+
 ## Why this exists
 
 PrestaShop runs dozens of independently-owned services across squads, tribes and business
