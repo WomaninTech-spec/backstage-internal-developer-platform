@@ -1,8 +1,8 @@
-# Internal Developer Platform — Backstage at PrestaShop
+# Internal Developer Platform -> Backstage at PrestaShop
 
 > **Case study, not source code.** This repository documents the architecture, scope and design
 > decisions behind the Internal Developer Portal (IDP) I lead as Head of Platform Engineering at
-> [PrestaShop](https://www.prestashop.com/) — a global e-commerce SaaS platform. No proprietary
+> [PrestaShop](https://www.prestashop.com/) a global e-commerce SaaS platform. No proprietary
 > source code, secrets, internal URLs, customer data, or colleague-identifying information is
 > included. Everything here is described at the level a public engineering blog post would use.
 
@@ -10,7 +10,7 @@
 
 | | |
 |---|---|
-| **Role** | Head of Platform Engineering — product owner & tech leadership for the IDP squad |
+| **Role** | Head of Platform Engineering product owner & tech leadership for the IDP squad |
 | **Foundation** | [Backstage](https://backstage.io) (CNCF), self-hosted, deployed on GKE |
 | **Scale** | 45+ custom plugins · ~40 business domains modeled in the software catalog · company-wide adoption |
 | **Stack** | TypeScript/React/Node monorepo, PostgreSQL, Redis, Kubernetes, Helm, ArgoCD, GitHub Actions |
